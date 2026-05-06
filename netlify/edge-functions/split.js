@@ -1,7 +1,7 @@
 export default function handler(request, context) {
   const variantes = [
-    { url: "https://spray.doseulado.com.br/", src: "pagina-a" },
-    { url: "https://spray2.doseulado.com.br/", src: "pagina-b" },
+    { url: "https://homens2.doseulado.com.br//", src: "pagina-a" },
+    { url: "https://homens.doseulado.com.br//", src: "pagina-b" },
   ];
 
   const escolhida = Math.random() < 0.5 ? variantes[0] : variantes[1];
