@@ -6,27 +6,26 @@ export default function handler(request, context) {
 
   const escolhida = Math.random() < 0.5 ? variantes[0] : variantes[1];
 
-  const urlOrigem = new URL(request.url);
-  const destino = new URL(escolhida.url);
+  // Lê a query string bruta da URL de entrada
+  const queryBruta = request.url.includes("?")
+    ? request.url.split("?")[1]
+    : "";
 
-  // Copia todas as UTMs do Meta intactas
-  urlOrigem.searchParams.forEach((valor, chave) => {
-    destino.searchParams.set(chave, valor);
-  });
+  const params = new URLSearchParams(queryBruta);
 
   // Modifica utm_source para identificar a variante na Yampi
-  const sourceOriginal = urlOrigem.searchParams.get("utm_source") || "direto";
-  destino.searchParams.set("utm_source", `${sourceOriginal}|${escolhida.variante}`);
+  const sourceOriginal = params.get("utm_source") || "direto";
+  params.set("utm_source", `${sourceOriginal}|${escolhida.variante}`);
 
-  // UTMs extras do GA4 — identificam a variante
-  destino.searchParams.set("utm_id",               escolhida.variante); // ID da campanha no GA4
-  destino.searchParams.set("utm_source_platform",  "meta_ads");         // plataforma de origem
-  destino.searchParams.set("utm_creative_format",  "video");            // formato do criativo
-  destino.searchParams.set("utm_marketing_tactic", escolhida.variante); // tática de marketing
+  // UTMs extras
+  params.set("utm_id",               escolhida.variante);
+  params.set("utm_source_platform",  "meta_ads");
+  params.set("utm_creative_format",  "video");
+  params.set("utm_marketing_tactic", escolhida.variante);
+  params.set("src",                  escolhida.variante);
+  params.set("sck",                  escolhida.variante);
 
-  // Rastreamento de variante
-  destino.searchParams.set("src", escolhida.variante);
-  destino.searchParams.set("sck", escolhida.variante);
+  const destino = `${escolhida.url}?${params.toString()}`;
 
-  return Response.redirect(destino.toString(), 302);
+  return Response.redirect(destino, 302);
 }
